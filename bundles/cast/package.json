@@ -1,0 +1,66 @@
+{
+  "name": "cast",
+  "version": "0.0.0",
+  "description": "",
+  "homepage": "",
+  "author": {
+    "name": "Guillaume CLEMENT--BONNIEL-VEYRON",
+    "email": "guillaume.clement-bonniel-veyron@epitech.eu",
+    "url": ""
+  },
+  "files": [
+    "dashboard",
+    "graphics",
+    "extension.js",
+    "extension"
+  ],
+  "keywords": [
+    "",
+    "nodecg-bundle"
+  ],
+  "nodecg": {
+    "compatibleRange": "^2.0.0",
+    "dashboardPanels": [
+      {
+        "name": "casters",
+        "title": "Casters",
+        "width": 6,
+        "file": "casters.html",
+        "headerColor": "#525F78"
+      }
+    ],
+    "graphics": [
+      {
+        "file": "casters.html",
+        "width": 1920,
+        "height": 1080,
+        "singleInstance": false
+      }
+    ],
+    "assetCategories": [
+      {
+          "name": "castersOverlay",
+          "title": "castersOverlay",
+          "allowedTypes": [
+              "jpg",
+              "jpeg",
+              "gif",
+              "png"
+          ]
+      }
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "license": "MIT"
+}

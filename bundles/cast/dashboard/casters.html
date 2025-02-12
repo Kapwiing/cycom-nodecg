@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Casters Information</title>
+		<meta charset="UTF-8" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<style>
+            body {
+                display: flex;
+                justify-content: center;
+                font-family: Arial, sans-serif;
+            }
+
+			#updateCast {
+                padding: 20px;
+                border-radius: 5px;
+            }
+
+			.cast-info {
+				display: flex;
+			}
+
+			.cast1-info, .cast2-info {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.vert-separator {
+				width: 20px;
+				border-left: 4px solid;
+				color: #9daecf;
+			}
+
+			#updateCastButton {
+				background-color: #04d400;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			#updateCastButton:hover {
+				background-color: #018620;
+			}
+
+			#swapButton {
+				background-color: #007BFF;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			#swapButton:hover {
+				background-color: #0056b3;
+			}
+			.input-field {
+				display: inline-block;
+				width: 90%;
+			}
+			.input-field input {
+				width: 90%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+			}
+			.input-field label {
+				font-weight: bold;
+			}
+			.update-button {
+				display: block;
+				text-align: center;
+			}
+        </style>
+	</head>
+	<body>
+		<form id="updateCast">
+			<div class="cast-info">
+				<div class="cast1-info">
+					<div class="input-field">
+						<label for="caster1">Caster 1 Name</label>
+						<input type="text" id="caster1"/>
+
+						<label for="caster1Twitter">Caster 1 Twitter</label>
+						<input type="text" id="caster1Twitter"/>
+					</div>
+				</div>
+				<div class="vert-separator"></div>
+				<div class="cast2-info">
+					<div class="input-field">
+						<label for="caster2">Caster 2 Name</label>
+						<input type="text" id="caster2"/>
+
+						<label for="caster2Twitter">Caster 2 Twitter</label>
+						<input type="text" id="caster2Twitter"/>
+					</div>
+				</div>
+			</div>
+			<div class="update-button">
+				<button id="swapButton" type="button">Swap</button>
+				<button id = "updateCastButton" type="submit">Update</button>
+			</div>
+		</form>
+		<script>
+			const caster1 = nodecg.Replicant('caster1');
+			const caster2 = nodecg.Replicant('caster2');
+			const caster1Twitter = nodecg.Replicant('caster1Twitter');
+			const caster2Twitter = nodecg.Replicant('caster2Twitter');
+
+			caster1.on('change', (newValue, oldValue) => {
+				document.getElementById('caster1').value = newValue;
+			});
+			caster2.on('change', (newValue, oldValue) => {
+				document.getElementById('caster2').value = newValue;
+			});
+
+			caster1Twitter.on('change', (newValue, oldValue) => {
+				document.getElementById('caster1Twitter').value = newValue;
+			});
+			caster2Twitter.on('change', (newValue, oldValue) => {
+				document.getElementById('caster2Twitter').value = newValue;
+			});
+
+			const castForm = document.getElementById('updateCast');
+
+			castForm.addEventListener('submit', (event) => {
+				event.preventDefault();
+				caster1.value = document.getElementById('caster1').value;
+				caster2.value = document.getElementById('caster2').value;
+				caster1Twitter.value = document.getElementById('caster1Twitter').value;
+				caster2Twitter.value = document.getElementById('caster2Twitter').value;
+
+				// NO PLEASE NO
+				// Swal.fire({
+				// 	title: 'Success!',
+				// 	text: 'You clicked the button.',
+				// 	icon: 'success',
+				// 	confirmButtonText: 'OK'
+            	// });
+			});
+
+			// Code for the swap button
+			const swapButton = document.getElementById('swapButton');
+			// When the button is clicked, we swap the values of the two inputs
+			swapButton.addEventListener('click', () => {
+				const caster1Input = document.getElementById('caster1');
+				const caster2Input = document.getElementById('caster2');
+				const temp = caster1Input.value;
+				caster1Input.value = caster2Input.value;
+				caster2Input.value = temp;
+
+				const caster1TwitterInput = document.getElementById('caster1Twitter');
+				const caster2TwitterInput = document.getElementById('caster2Twitter');
+				const tempTwitter = caster1TwitterInput.value;
+				caster1TwitterInput.value = caster2TwitterInput.value;
+				caster2TwitterInput.value = tempTwitter;
+			});
+		</script>
+	</body>
+</html>

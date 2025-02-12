@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Cast Overlay</title>
+		<meta charset="UTF-8" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+		/>
+		<style>
+			@font-face {
+				font-family: "Tungsten-Bold";
+				src: url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.eot");
+				src: url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.eot?#iefix")format("embedded-opentype"),
+				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.woff2")format("woff2"),
+				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.woff")format("woff"),
+				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.ttf")format("truetype"),
+				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.svg#Tungsten-Bold")format("svg");
+				font-weight: bold;
+				font-style: normal;
+			}
+
+			body, html {
+                height: 100%;
+                margin: 0;
+                position: relative;
+				overflow: hidden; /* Hide scrollbars */
+            }
+
+            #castersOverlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+            }
+
+            #caster1, #caster2, #caster1Twitter, #caster2Twitter, #twitter1, #twitter2{
+                position: absolute;
+                width: 100%;
+                z-index: 2;
+                text-align: center;
+            }
+
+            #caster1 {
+                top: 78%;
+				right: 20%;
+            }
+            #caster2 {
+				top: 78%;
+				left: 20%;
+            }
+
+			#caster1Twitter {
+                top: 85%;
+				right: 20%;
+            }
+
+            #caster2Twitter {
+				top: 85%;
+				left: 20%;
+            }
+
+			/* Note to self ; This is a horrible piece of shit code please I'm going to die */
+			#caster1Twitter::before, #caster2Twitter::before {
+                background-image: url('https://upload.wikimedia.org/wikipedia/commons/5/57/X_logo_2023_%28white%29.png');
+				display: inline-block;
+				position:absolute;
+				/* Why the fuck does margin-right not work ???? I have to do this terribleness*/
+				margin-left: -28px;
+				margin-top: 5px;
+				background-repeat: no-repeat;
+				background-size: 25px 25px;
+				width: 25px;
+				height: 25px;
+				content: "";
+            }
+
+            .casterName {
+                font-family: 'Tungsten-Bold', sans-serif;
+                font-size: 68px;
+				color: white;
+				animation: pulse; /* referring directly to the animation's @keyframe declaration */
+				animation-duration: 2s;
+            }
+			.casterTwitter {
+                font-family: 'Tungsten-Bold', sans-serif;
+                font-size: 28px;
+				color: white;
+				animation: pulse; /* referring directly to the animation's @keyframe declaration */
+				animation-duration: 2s;
+            }
+		</style>
+	</head>
+	<body>
+		<img id="castersOverlay" src="" alt="Background Image">
+		<div class="casterName" id="caster1">Caster 1</div>
+		<div class="casterTwitter" id="caster1Twitter">@caster1</div>
+		<div class="casterName" id="caster2">Caster 2</div>
+		<div class="casterTwitter" id="caster2Twitter">@caster2</div>
+		<script>
+			// We get the replicants we want to listen to
+			const caster1 = nodecg.Replicant('caster1');
+			const caster2 = nodecg.Replicant('caster2');
+			const caster1Twitter = nodecg.Replicant('caster1Twitter');
+			const caster2Twitter = nodecg.Replicant('caster2Twitter');
+
+			document.addEventListener('DOMContentLoaded', () => {
+				// We set the background image
+				const backgroundImage = document.getElementById('castersOverlay');
+				nodecg.Replicant('assets:castersOverlay').on('change', newValue => {
+					backgroundImage.src = newValue[0].url;
+				});
+			});
+			// This here is a listener that will update the text in the div when the value of the replicant changes
+			caster1.on('change', (newValue, oldValue) => {
+				document.getElementById('caster1').innerText = newValue;
+			});
+			caster2.on('change', (newValue, oldValue) => {
+				document.getElementById('caster2').innerText = newValue;
+			});
+
+			caster1Twitter.on('change', (newValue, oldValue) => {
+				document.getElementById('caster1Twitter').innerText = newValue;
+			});
+			caster2Twitter.on('change', (newValue, oldValue) => {
+				document.getElementById('caster2Twitter').innerText = newValue;
+			});
+
+			// If the twitter is empty, we move it beyond the bounds of the page so that the X logo doesnt display
+			// This is ALSO completly stupid but that will do for now
+			caster1Twitter.on('change', (newValue, oldValue) => {
+				if (newValue === '') {
+					document.getElementById('caster1Twitter').style.right = '-1000%';
+				} else {
+					document.getElementById('caster1Twitter').style.right = '20%';
+				}
+			});
+			caster2Twitter.on('change', (newValue, oldValue) => {
+				if (newValue === '') {
+					document.getElementById('caster2Twitter').style.left = '-1000%';
+				} else {
+					document.getElementById('caster2Twitter').style.left = '20%';
+				}
+			});
+		</script>
+	</body>
+</html>
