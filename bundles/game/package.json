@@ -1,0 +1,66 @@
+{
+  "name": "game",
+  "version": "0.0.0",
+  "description": "",
+  "homepage": "",
+  "author": {
+    "name": "Guillaume CLEMENT--BONNIEL-VEYRON",
+    "email": "guillaume.clement-bonniel-veyron@epitech.eu",
+    "url": ""
+  },
+  "files": [
+    "dashboard",
+    "graphics",
+    "extension.js",
+    "extension"
+  ],
+  "keywords": [
+    "",
+    "nodecg-bundle"
+  ],
+  "nodecg": {
+    "compatibleRange": "^2.0.0",
+    "graphics": [
+      {
+        "file": "game.html",
+        "width": 1920,
+        "height": 1080,
+        "singleInstance": false
+      }
+    ],
+    "dashboardPanels": [
+      {
+        "name": "game",
+        "title": "Game",
+        "width": 5,
+        "file": "game.html",
+        "headerColor": "#525F78"
+      }
+    ],
+    "assetCategories": [
+      {
+          "name": "teamsOverlay",
+          "title": "teamsOverlay",
+          "allowedTypes": [
+              "jpg",
+              "jpeg",
+              "gif",
+              "png"
+          ]
+      }
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "license": "MIT"
+}

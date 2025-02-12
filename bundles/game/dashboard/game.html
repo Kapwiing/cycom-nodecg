@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Teams Information</title>
+		<meta charset="UTF-8" />
+		<style>
+            body {
+                display: flex;
+                justify-content: center;
+                font-family: Arial, sans-serif;
+            }
+
+			#updateTeams {
+                padding: 20px;
+                border-radius: 5px;
+            }
+
+			.teams-info {
+				display: flex;
+			}
+
+			.team1-info, .team2-info {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.vert-separator {
+				width: 20px;
+				border-left: 4px solid;
+				color: #9daecf;
+			}
+
+			.horz-separator {
+				height: 20px;
+				width: 100%;
+				border-top: 4px solid;
+				color: #9daecf;
+				margin-top: 20px;
+				margin-bottom: 20px;
+			}
+
+			#updateTeamsButton {
+				background-color: #04d400;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			#updateTeamsButton:hover {
+				background-color: #018620;
+			}
+
+			#swapButton {
+				background-color: #007BFF;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			#swapButton:hover {
+				background-color: #0056b3;
+			}
+			.input-field {
+				display: inline-block;
+				width: 90%;
+			}
+			.input-field-short {
+				display: inline-block;
+				width: 30%;
+			}
+			.input-field input {
+				width: 95%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+			}
+			.input-field-short input {
+				width: 80%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+			}
+			.input-field label {
+				font-weight: bold;
+			}
+			.input-field-short label {
+				font-weight: bold;
+			}
+			.update-button {
+				display: block;
+				text-align: center;
+			}
+			.title {
+				text-align: center;
+				font-size: 26px;
+				margin-top: 5px;
+			}
+        </style>
+	</head>
+	<body>
+		<form id="updateTeams">
+			<h2 class="title">Teams Information</h2>
+			<div class="teams-info">
+				<!-- Team 1 Informations -->
+				<div class="team1-info">
+					<div class="input-field">
+						<label for="team1">Team 1 Name</label>
+						<input type="text" id="team1"/>
+					</div>
+					<div class="input-field">
+						<label for="team1Points">Team 1 Points</label>
+						<input type="number" id="team1Points"/>
+					</div>
+				</div>
+				<div class="vert-separator"></div>
+				<!--Team 2 Informations -->
+				<div class="team2-info">
+					<div class="input-field">
+						<label for="team2">Team 2 Name</label>
+						<input type="text" id="team2"/>
+					</div>
+					<div class="input-field">
+						<label for="team2Points">Team 2 Points</label>
+						<input type="number" id="team2Points"/>
+					</div>
+				</div>
+			</div>
+			<div class="horz-separator"></div>
+			<h2 class="title">Match Information</h2>
+			<!-- General Information -->
+			<div class="general-info">
+				<div class="input-field-short">
+					<label for="matchType">Match Type</label>
+					<input type="text" id="matchType"/>
+				</div>
+				<div class="input-field-short">
+					<label for="bestOf">Best Of</label>
+					<input type="number" id="bestOf"/>
+				</div>
+			</div>
+
+			<!-- Action Buttons -->
+			<div class="update-button">
+				<button id="swapButton" type="button">Swap</button>
+				<button id="updateTeamsButton" type="submit">Update</button>
+			</div>
+		</form>
+		<script>
+			const team1 = nodecg.Replicant('team1');
+			const team2 = nodecg.Replicant('team2');
+
+			const matchType = nodecg.Replicant('matchType');
+			const bestOf = nodecg.Replicant('bestOf');
+
+			const team1Points = nodecg.Replicant('team1Points');
+			const team2Points = nodecg.Replicant('team2Points');
+
+
+			team1.on('change', (newValue, oldValue) => {
+				document.getElementById('team1').value = newValue;
+			});
+			team2.on('change', (newValue, oldValue) => {
+				document.getElementById('team2').value = newValue;
+			});
+
+			matchType.on('change', (newValue, oldValue) => {
+				document.getElementById('matchType').value = newValue;
+			});
+			bestOf.on('change', (newValue, oldValue) => {
+				document.getElementById('bestOf').value = newValue;
+			});
+
+			team1Points.on('change', (newValue, oldValue) => {
+				document.getElementById('team1Points').value = newValue;
+			});
+			team2Points.on('change', (newValue, oldValue) => {
+				document.getElementById('team2Points').value = newValue;
+			});
+
+			const castForm = document.getElementById('updateTeams');
+
+			castForm.addEventListener('submit', (event) => {
+				event.preventDefault();
+				team1.value = document.getElementById('team1').value;
+				team2.value = document.getElementById('team2').value;
+				team1Points.value = document.getElementById('team1Points').value;
+				team2Points.value = document.getElementById('team2Points').value;
+				matchType.value = document.getElementById('matchType').value;
+				bestOf.value = document.getElementById('bestOf').value;
+			});
+
+			// Code for the swap button
+			const swapButton = document.getElementById('swapButton');
+			// When the button is clicked, we swap the values of the two inputs
+			swapButton.addEventListener('click', () => {
+				const team1Input = document.getElementById('team1');
+				const team2Input = document.getElementById('team2');
+				const temp = team1Input.value;
+				team1Input.value = team2Input.value;
+				team2Input.value = temp;
+				const team1PointsInput = document.getElementById('team1Points');
+				const team2PointsInput = document.getElementById('team2Points');
+				const tempPoints = team1PointsInput.value;
+				team1PointsInput.value = team2PointsInput.value;
+				team2PointsInput.value = tempPoints;
+			});
+		</script>
+	</body>
+</html>
