@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Player Stats</title>
+		<meta charset="UTF-8" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<style>
+            body {
+                display: flex;
+                justify-content: center;
+                font-family: Arial, sans-serif;
+            }
+
+			#updateCast {
+                padding: 20px;
+                border-radius: 5px;
+            }
+
+			.cast-info {
+				display: flex;
+			}
+
+			.cast1-info {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.vert-separator {
+				width: 20px;
+				border-left: 4px solid;
+				color: #9daecf;
+			}
+
+			#updateStatsbutton {
+				background-color: #04d400;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			#updateStatsbutton:hover {
+				background-color: #018620;
+			}
+
+			#getStatsButton {
+				background-color: #007BFF;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			#getStatsButton:hover {
+				background-color: #0056b3;
+			}
+			.input-field {
+				display: inline-block;
+				width: 90%;
+			}
+			.input-field input {
+				width: 90%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+			}
+			.input-field label {
+				font-weight: bold;
+			}
+			.update-button {
+				display: block;
+				text-align: center;
+			}
+        </style>
+	</head>
+	<body>
+		<form id="updateCast">
+			<div class="cast-info">
+				<div class="cast1-info">
+					<div class="input-field">
+						<label for="caster1">Caster 1 Name</label>
+						<input type="text" id="caster1"/>
+
+						<label for="caster1Twitter">Caster 1 Twitter</label>
+						<input type="text" id="caster1Twitter"/>
+					</div>
+				</div>
+			</div>
+			<div class="update-button">
+				<button id="getStatsButton" type="button">Get Stats</button>
+				<button id = "updateStatsbutton" type="submit">Update Stats</button>
+			</div>
+		</form>
+		<script>
+			const caster1 = nodecg.Replicant('caster1');
+			const caster1Twitter = nodecg.Replicant('caster1Twitter');
+
+			caster1.on('change', (newValue, oldValue) => {
+				document.getElementById('caster1').value = newValue;
+			});
+
+			caster1Twitter.on('change', (newValue, oldValue) => {
+				document.getElementById('caster1Twitter').value = newValue;
+			});
+
+			const castForm = document.getElementById('updateCast');
+
+			castForm.addEventListener('submit', (event) => {
+				event.preventDefault();
+				caster1.value = document.getElementById('caster1').value;
+				caster1Twitter.value = document.getElementById('caster1Twitter').value;
+			});
+
+			// Code for the get stats button
+			const getStatsButton = document.getElementById('getStatsButton');
+
+			getStatsButton.addEventListener('click', () => {
+				// Get stats by sending the msg
+				nodecg.sendMessage("testMessage", "Yumenoashi%23euw");
+
+				const testReplicant = nodecg.Replicant("test-replicant");
+				// Get replicant new value if changed
+				testReplicant.on('change', (newValue, oldValue) => {
+					if (!newValue) {
+						return;
+					}
+					nodecg.log.info(`New replicant value : ${newValue}`);
+				});
+			});
+
+		</script>
+	</body>
+</html>
