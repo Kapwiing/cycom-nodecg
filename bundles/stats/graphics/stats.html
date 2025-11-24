@@ -36,58 +36,166 @@
                 width: 100%;
                 z-index: 2;
                 text-align: center;
+                top: 15%;
+				left: 0%;
             }
 
-            #player {
-                top: 20%;
-				right: 20%;
+			.playerName {
+                font-family: 'Horizon-Bold', sans-serif;
+                font-size: 80px;
+				color: rgb(114, 32, 255);
+				animation: pulse; /* referring directly to the animation's @keyframe declaration */
+				animation-duration: 2s;
             }
 
 			#player-stats {
 				font-family: 'Horizon-Bold', sans-serif;
 				position: absolute;
 				top: 35%;
-				right: 5%;
+				right: 10%;
 				z-index: 2;
 			}
 
+			.stat-row {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 15px;
+			}
+
 			.stat-label {
-				font-size: 30px;
+				font-size: 22px;
 				color: rgb(114, 32, 255);
 				text-align: left;
 			}
 
 			.stat-value {
-				font-size: 40px;
+				font-size: 38px;
 				color: rgb(100, 25, 220);
 				text-align: right;
+				margin-left: 20px;
+				flex-shrink: 0;
+				min-width: 120px;
 			}
-            .playerName {
-                font-family: 'Horizon-Bold', sans-serif;
-                font-size: 68px;
-				color: rgb(114, 32, 255);
-				animation: pulse; /* referring directly to the animation's @keyframe declaration */
-				animation-duration: 2s;
-            }
 
-			.stat-row {
-				margin-bottom: 15px;
+			#agent-container {
+				position: absolute;
+				top: 25%;
+				left: 10%;
+				z-index: 2;
+				height: 900px;
+				width: 587px;
+			}
+
+			#agent-container {
+				position: absolute;
+				top: 25%;
+				left: 10%;
+				z-index: 2;
+				height: 900px;
+				width: 587px;
+			}
+			#agent-image {
+				position: absolute;
+				z-index: 3;
+				width: 100%;
+				height: 80%;
+				object-fit: contain;
+				left: 0;
+				top: 0;
+			}
+			#agent-image2 {
+				position: absolute;
+				z-index: 2;
+				width: 80%;
+				height: 60%;
+				object-fit: contain;
+				right: 50%;
+				top: 10%;
+				opacity: 0.9;
+			}
+			#agent-image3 {
+				position: absolute;
+				z-index: 1;
+				width: 70%;
+				height: 50%;
+				object-fit: contain;
+				left: 50%;
+				top: 18%;
+				opacity: 0.7;
 			}
 		</style>
 	</head>
 	<body>
 		<img id="castersOverlay" src="" alt="Background Image">
 		<div class="playerName" id="player"></div>
+		<!-- Agent image container -->
+		<div id="agent-container">
+			<img id="agent-image" src="" alt="">
+			<img id="agent-image2" src="" alt="">
+			<img id="agent-image3" src="" alt="">
+		</div>
 
+		<script>
+		(function(){
+			const img = document.getElementById('agent-image');
+
+			function resolveVal(obj, keys) {
+				if (!obj) return null;
+				for (const k of keys) {
+					const v = obj[k];
+					if (v === undefined || v === null) continue;
+					if (typeof v === 'object' && 'value' in v) return v.value;
+					return v;
+				}
+				return null;
+			}
+
+			const rep = nodecg.Replicant('playerData');
+
+			function updateAgentImage(data) {
+				const agentNames = [
+					resolveVal(data, ['topAgent']),
+					resolveVal(data, ['topAgent2']),
+					resolveVal(data, ['topAgent3'])
+				];
+				const imgElems = [
+					document.getElementById('agent-image'),
+					document.getElementById('agent-image2'),
+					document.getElementById('agent-image3')
+				];
+
+			 agentNames.forEach((name, i) => {
+					const img = imgElems[i];
+					if (!name) {
+						img.style.display = 'none';
+						img.src = '';
+						img.alt = '';
+					} else {
+						const file = 'agents/' + encodeURIComponent(String(name)) + '.png';
+						img.src = file;
+						img.alt = String(name);
+						img.style.display = 'block';
+					}
+				});
+			}
+
+			rep.on('change', updateAgentImage);
+			// initialize if value already present
+			if (rep.value) updateAgentImage(rep.value);
+		})();
+		</script>
 		<!-- Static player stats elements -->
 		<div id="player-stats">
 			<div class="stat-row">
 				<span class="stat-label">Current Rank: </span>
 				<span class="stat-value" id="stat-currentRank">-</span>
+				<img id="img-currentRank" src="" alt="" style="height:48px;vertical-align:middle;display:none;margin-left:10px;">
 			</div>
 			<div class="stat-row">
 				<span class="stat-label">Peak Rank: </span>
 				<span class="stat-value" id="stat-peakRank">-</span>
+				<img id="img-peakRank" src="" alt="" style="height:48px;vertical-align:middle;display:none;margin-left:10px;">
 			</div>
 			<div class="stat-row">
 				<span class="stat-label">Top Role: </span>
@@ -124,14 +232,50 @@
 				});
 			});
 
+			document.getElementById('player').innerText = '';
+
 			player.on('change', (newValue) => {
-				document.getElementById('player').innerText = newValue || '';
+				// document.getElementById('player').innerText = newValue || '';
+				document.getElementById('player').innerText = getField(newValue, ['username']);
 			});
 
 			playerData.on('change', (newValue) => {
 				console.log('Player Data updated:', newValue);
 				updateStats(newValue);
 			});
+
+			const imgCurrentRank = document.getElementById('img-currentRank');
+			const imgPeakRank = document.getElementById('img-peakRank');
+
+			function setRankImage(imgElem, rankValue) {
+				if (!rankValue || rankValue === '-') {
+					imgElem.style.display = 'none';
+					imgElem.src = '';
+					imgElem.alt = '';
+					return;
+				}
+
+				let rankName = '';
+				let rankNum = '';
+				if (typeof rankValue === 'object') {
+					rankName = rankValue.name || rankValue.rank || '';
+					rankNum = rankValue.number || rankValue.num || '';
+				} else if (typeof rankValue === 'string') {
+					// Example: "Diamond 3", "Immortal", "Gold 2"
+					const match = rankValue.match(/^([A-Za-z ]+?)(?:\s*(\d+))?$/);
+					if (match) {
+						rankName = match[1].trim();
+						rankNum = match[2] ? match[2] : '';
+					} else {
+						rankName = rankValue;
+						rankNum = '';
+					}
+				}
+				const fileName = `ranks/${rankName.replace(/\s+/g, '')}_${rankNum}_Rank.png`;
+				imgElem.src = fileName;
+				imgElem.alt = 'Rank ' + rankNum;
+				imgElem.style.display = 'inline-block';
+			}
 
 			// Helper to safely pull multiple possible keys
 			function getField(obj, keys) {
@@ -212,7 +356,9 @@
 					avgDamage: ['avgDamage','averageDamage','avg_damage','avgDmg','dmgAvg'],
 					avgKDR: ['avgKDR','kdr','avg_kdr','kdrAvg'],
 					headshotPct: ['headshotPct','hsPercent','headshot_pct','hs','headshotPctPct'],
-					topAgent: ['topAgent','agent','top_agent','favoriteAgent']
+					topAgent: ['topAgent','agent','top_agent','favoriteAgent'],
+					topAgent2: ['topAgent2','agent2','secondFavoriteAgent'],
+					topAgent3: ['topAgent3','agent3','thirdFavoriteAgent']
 				};
 
 				document.getElementById('player').innerText = getField(newValue, ['username']);
@@ -223,6 +369,9 @@
 				document.getElementById('stat-avgKDR').textContent = formatNumber(getField(newValue, mapping.avgKDR), 2);
 				document.getElementById('stat-headshotPct').textContent = formatPercent(getField(newValue, mapping.headshotPct));
 				document.getElementById('stat-topAgent').textContent = getField(newValue, mapping.topAgent);
+
+				setRankImage(imgCurrentRank, getField(newValue, mapping.currentRank));
+				setRankImage(imgPeakRank, getField(newValue, mapping.peakRank));
 			}
 
 			// Initialize if value is already present

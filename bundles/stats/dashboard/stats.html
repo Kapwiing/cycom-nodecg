@@ -111,6 +111,8 @@
 				document.getElementById('clearStatsButton').addEventListener('click', () => {
 					const playerDataRep = nodecg.Replicant('playerData');
 					playerDataRep.value = {};
+					const playerRep = nodecg.Replicant('player');
+					playerRep.value = "";
 				});
 			</script>
 		</form>
@@ -123,12 +125,24 @@
 				nodecg.sendMessage("testMessage", player);
 			});
 
+			const player = nodecg.Replicant('player');
 			const playerData = nodecg.Replicant('playerData');
+
+			player.on('change', (newValue) => {
+				document.getElementById('player').value = newValue || '';
+			});
 
 			playerData.on('change', (newValue) => {
 				document.getElementById('jsonResponse').value = JSON.stringify(newValue, null, 2);
 			});
 
+			const updateStatsForm = document.getElementById('updateStatsbutton');
+
+			updateStatsForm.addEventListener('click', (event) => {
+				event.preventDefault();
+				const playerDataRep = nodecg.Replicant('playerData');
+				playerDataRep.value = document.getElementById('jsonResponse').value ? JSON.parse(document.getElementById('jsonResponse').value) : {};
+			});
 		</script>
 	</body>
 </html>

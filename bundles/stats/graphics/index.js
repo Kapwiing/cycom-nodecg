@@ -3,7 +3,7 @@
 
 const nodecg = require("../../../cfg/nodecg");
 
-nodecg.Replicant('player', {defaultValue: "Player#Tag"});
+nodecg.Replicant('player', {defaultValue: "Player"});
 nodecg.Replicant('playerData', {defaultValue: {}});
 
 nodecg.Replicant('assets:castersOverlay');
