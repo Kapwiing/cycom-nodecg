@@ -3,7 +3,7 @@
 
 const nodecg = require("../../../cfg/nodecg");
 
-nodecg.Replicant('caster1', {defaultValue: "Caster 1"});
-nodecg.Replicant('caster1Twitter', {defaultValue: "@Caster1"});
+nodecg.Replicant('player', {defaultValue: "Player#Tag"});
+nodecg.Replicant('playerData', {defaultValue: {}});
 
 nodecg.Replicant('assets:castersOverlay');

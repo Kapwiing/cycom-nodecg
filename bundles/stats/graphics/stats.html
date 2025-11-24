@@ -6,16 +6,11 @@
 		<link
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-		/>
+		crossorigin="anonymous" />
 		<style>
 			@font-face {
-				font-family: "Tungsten-Bold";
-				src: url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.eot");
-				src: url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.eot?#iefix")format("embedded-opentype"),
-				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.woff2")format("woff2"),
-				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.woff")format("woff"),
-				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.ttf")format("truetype"),
-				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.svg#Tungsten-Bold")format("svg");
+				font-family: "Horizon-Bold";
+				src: url("shared/horizon.otf") format("opentype");
 				font-weight: bold;
 				font-style: normal;
 			}
@@ -36,88 +31,202 @@
                 z-index: 1;
             }
 
-            #caster1, #caster1Twitter, #twitter1 {
+            #player{
                 position: absolute;
                 width: 100%;
                 z-index: 2;
                 text-align: center;
             }
 
-            #caster1 {
-                top: 78%;
+            #player {
+                top: 20%;
 				right: 20%;
             }
 
-			#caster1Twitter {
-                top: 85%;
-				right: 20%;
-            }
+			#player-stats {
+				font-family: 'Horizon-Bold', sans-serif;
+				position: absolute;
+				top: 35%;
+				right: 5%;
+				z-index: 2;
+			}
 
-			/* Note to self ; This is a horrible piece of shit code please I'm going to die */
-			#caster1Twitter::before {
-                background-image: url('https://upload.wikimedia.org/wikipedia/commons/5/57/X_logo_2023_%28white%29.png');
-				display: inline-block;
-				position:absolute;
-				/* Why the fuck does margin-right not work ???? I have to do this terribleness*/
-				margin-left: -28px;
-				margin-top: 5px;
-				background-repeat: no-repeat;
-				background-size: 25px 25px;
-				width: 25px;
-				height: 25px;
-				content: "";
-            }
+			.stat-label {
+				font-size: 30px;
+				color: rgb(114, 32, 255);
+				text-align: left;
+			}
 
-            .casterName {
-                font-family: 'Tungsten-Bold', sans-serif;
+			.stat-value {
+				font-size: 40px;
+				color: rgb(100, 25, 220);
+				text-align: right;
+			}
+            .playerName {
+                font-family: 'Horizon-Bold', sans-serif;
                 font-size: 68px;
-				color: white;
+				color: rgb(114, 32, 255);
 				animation: pulse; /* referring directly to the animation's @keyframe declaration */
 				animation-duration: 2s;
             }
-			.casterTwitter {
-                font-family: 'Tungsten-Bold', sans-serif;
-                font-size: 28px;
-				color: white;
-				animation: pulse; /* referring directly to the animation's @keyframe declaration */
-				animation-duration: 2s;
-            }
+
+			.stat-row {
+				margin-bottom: 15px;
+			}
 		</style>
 	</head>
 	<body>
 		<img id="castersOverlay" src="" alt="Background Image">
-		<div class="casterName" id="caster1">Caster 1</div>
-		<div class="casterTwitter" id="caster1Twitter">@caster1</div>
+		<div class="playerName" id="player"></div>
+
+		<!-- Static player stats elements -->
+		<div id="player-stats">
+			<div class="stat-row">
+				<span class="stat-label">Current Rank: </span>
+				<span class="stat-value" id="stat-currentRank">-</span>
+			</div>
+			<div class="stat-row">
+				<span class="stat-label">Peak Rank: </span>
+				<span class="stat-value" id="stat-peakRank">-</span>
+			</div>
+			<div class="stat-row">
+				<span class="stat-label">Top Role: </span>
+				<span class="stat-value" id="stat-topRole">-</span>
+			</div>
+			<div class="stat-row">
+				<span class="stat-label">Most played Agent: </span>
+				<span class="stat-value" id="stat-topAgent">-</span>
+			</div>
+			<div class="stat-row">
+				<span class="stat-label">Average Damage: </span>
+				<span class="stat-value" id="stat-avgDamage">-</span>
+			</div>
+			<div class="stat-row">
+				<span class="stat-label">Average K/D Ratio: </span>
+				<span class="stat-value" id="stat-avgKDR">-</span>
+			</div>
+			<div class="stat-row">
+				<span class="stat-label">Headshot %: </span>
+				<span class="stat-value" id="stat-headshotPct">-</span>
+			</div>
+		</div>
+
 		<script>
 			// We get the replicants we want to listen to
-			const caster1 = nodecg.Replicant('caster1');
-			const caster1Twitter = nodecg.Replicant('caster1Twitter');
+			const player = nodecg.Replicant('player');
+			const playerData = nodecg.Replicant('playerData');
 
 			document.addEventListener('DOMContentLoaded', () => {
 				// We set the background image
 				const backgroundImage = document.getElementById('castersOverlay');
 				nodecg.Replicant('assets:castersOverlay').on('change', newValue => {
-					backgroundImage.src = newValue[0].url;
+					backgroundImage.src = (newValue && newValue[0] && newValue[0].url) ? newValue[0].url : '';
 				});
 			});
-			// This here is a listener that will update the text in the div when the value of the replicant changes
-			caster1.on('change', (newValue, oldValue) => {
-				document.getElementById('caster1').innerText = newValue;
+
+			player.on('change', (newValue) => {
+				document.getElementById('player').innerText = newValue || '';
 			});
 
-			caster1Twitter.on('change', (newValue, oldValue) => {
-				document.getElementById('caster1Twitter').innerText = newValue;
+			playerData.on('change', (newValue) => {
+				console.log('Player Data updated:', newValue);
+				updateStats(newValue);
 			});
 
-			// If the twitter is empty, we move it beyond the bounds of the page so that the X logo doesnt display
-			// This is ALSO completly stupid but that will do for now
-			caster1Twitter.on('change', (newValue, oldValue) => {
-				if (newValue === '') {
-					document.getElementById('caster1Twitter').style.right = '-1000%';
-				} else {
-					document.getElementById('caster1Twitter').style.right = '20%';
+			// Helper to safely pull multiple possible keys
+			function getField(obj, keys) {
+				if (!obj) return '-';
+				for (const k of keys) {
+					if (obj[k] !== undefined && obj[k] !== null) return obj[k];
 				}
-			});
+				return '-';
+			}
+
+			function formatPercent(val) {
+				if (val === '-' || val === null || val === undefined) return '-';
+				const n = Number(val);
+				if (isNaN(n)) return String(val);
+				// handle values given as 0.12 or 12
+				if (Math.abs(n) <= 1) return (n * 100).toFixed(1) + '%';
+				return n.toFixed(1) + '%';
+			}
+
+			function formatNumber(val, decimals = 1) {
+				if (val === '-' || val === null || val === undefined) return '-';
+				const n = Number(val);
+				if (isNaN(n)) return String(val);
+				return n.toFixed(decimals);
+			}
+			// Normalize values that may be objects like { value: "...", found: true }
+			function getField(obj, keys) {
+				// If obj itself is the value-object, return its .value
+				if (obj && typeof obj === 'object' && ('value' in obj)) {
+					const v = obj.value;
+					return (v === undefined || v === null) ? '-' : v;
+				}
+				if (!obj) return '-';
+				for (const k of keys) {
+					const v = obj[k];
+					if (v === undefined || v === null) continue;
+					if (typeof v === 'object' && ('value' in v)) {
+						const val = v.value;
+						return (val === undefined || val === null) ? '-' : val;
+					}
+					return v;
+				}
+				return '-';
+			}
+
+			// Accept strings like "17.1%", numbers in [0,1] or 0-100, and normalize formatting
+			function formatPercent(val) {
+				if (val === '-' || val === null || val === undefined) return '-';
+
+				// If it's a string that already ends with '%', normalize decimals
+				if (typeof val === 'string') {
+					const s = val.trim();
+					if (s.endsWith('%')) {
+						const num = Number(s.slice(0, -1));
+						if (!isNaN(num)) return num.toFixed(1) + '%';
+						return s;
+					}
+					// try parsing numeric string
+					const n = Number(s);
+					if (!isNaN(n)) {
+						if (Math.abs(n) <= 1) return (n * 100).toFixed(1) + '%';
+						return n.toFixed(1) + '%';
+					}
+					return s;
+				}
+
+				const n = Number(val);
+				if (isNaN(n)) return String(val);
+				if (Math.abs(n) <= 1) return (n * 100).toFixed(1) + '%';
+				return n.toFixed(1) + '%';
+			}
+			// Update function that maps common possible keys to each stat
+			function updateStats(newValue) {
+				const mapping = {
+					currentRank: ['currentRank','rank','rankCurrent','current_rank'],
+					peakRank: ['peakRank','peak','highestRank','peak_rank'],
+					topRole: ['topRole','role','top_role'],
+					avgDamage: ['avgDamage','averageDamage','avg_damage','avgDmg','dmgAvg'],
+					avgKDR: ['avgKDR','kdr','avg_kdr','kdrAvg'],
+					headshotPct: ['headshotPct','hsPercent','headshot_pct','hs','headshotPctPct'],
+					topAgent: ['topAgent','agent','top_agent','favoriteAgent']
+				};
+
+				document.getElementById('player').innerText = getField(newValue, ['username']);
+				document.getElementById('stat-currentRank').textContent = getField(newValue, mapping.currentRank);
+				document.getElementById('stat-peakRank').textContent = getField(newValue, mapping.peakRank);
+				document.getElementById('stat-topRole').textContent = getField(newValue, mapping.topRole);
+				document.getElementById('stat-avgDamage').textContent = formatNumber(getField(newValue, mapping.avgDamage), 0);
+				document.getElementById('stat-avgKDR').textContent = formatNumber(getField(newValue, mapping.avgKDR), 2);
+				document.getElementById('stat-headshotPct').textContent = formatPercent(getField(newValue, mapping.headshotPct));
+				document.getElementById('stat-topAgent').textContent = getField(newValue, mapping.topAgent);
+			}
+
+			// Initialize if value is already present
+			if (playerData.value) updateStats(playerData.value);
 		</script>
 	</body>
 </html>

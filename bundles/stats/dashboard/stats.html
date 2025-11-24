@@ -38,6 +38,7 @@
 				padding: 10px 20px;
 				border-radius: 5px;
 				cursor: pointer;
+				margin-bottom: 20px;
 			}
 			#updateStatsbutton:hover {
 				background-color: #018620;
@@ -50,10 +51,25 @@
 				padding: 10px 20px;
 				border-radius: 5px;
 				cursor: pointer;
+				margin-bottom: 20px;
 			}
 			#getStatsButton:hover {
 				background-color: #0056b3;
 			}
+
+			#clearStatsButton {
+				background-color: #dc3545;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+				margin-bottom: 20px;
+			}
+			#clearStatsButton:hover {
+				background-color: #a71d2a;
+			}
+
 			.input-field {
 				display: inline-block;
 				width: 90%;
@@ -79,54 +95,38 @@
 			<div class="cast-info">
 				<div class="cast1-info">
 					<div class="input-field">
-						<label for="caster1">Caster 1 Name</label>
-						<input type="text" id="caster1"/>
+						<label for="player">Player Name</label>
+						<input type="text" id="player"/>
 
-						<label for="caster1Twitter">Caster 1 Twitter</label>
-						<input type="text" id="caster1Twitter"/>
-					</div>
+						<label for="jsonResponse">Raw JSON Response (debugging)</label>
+						<textarea id="jsonResponse" rows="10" cols="50" readonly></textarea>
 				</div>
 			</div>
 			<div class="update-button">
 				<button id="getStatsButton" type="button">Get Stats</button>
-				<button id = "updateStatsbutton" type="submit">Update Stats</button>
+				<button id="updateStatsbutton" type="submit">Update Stats</button>
+				<button id="clearStatsButton" type="button">Clear Stats</button>
 			</div>
+			<script>
+				document.getElementById('clearStatsButton').addEventListener('click', () => {
+					const playerDataRep = nodecg.Replicant('playerData');
+					playerDataRep.value = {};
+				});
+			</script>
 		</form>
 		<script>
-			const caster1 = nodecg.Replicant('caster1');
-			const caster1Twitter = nodecg.Replicant('caster1Twitter');
-
-			caster1.on('change', (newValue, oldValue) => {
-				document.getElementById('caster1').value = newValue;
-			});
-
-			caster1Twitter.on('change', (newValue, oldValue) => {
-				document.getElementById('caster1Twitter').value = newValue;
-			});
-
-			const castForm = document.getElementById('updateCast');
-
-			castForm.addEventListener('submit', (event) => {
-				event.preventDefault();
-				caster1.value = document.getElementById('caster1').value;
-				caster1Twitter.value = document.getElementById('caster1Twitter').value;
-			});
-
 			// Code for the get stats button
 			const getStatsButton = document.getElementById('getStatsButton');
 
 			getStatsButton.addEventListener('click', () => {
-				// Get stats by sending the msg
-				nodecg.sendMessage("testMessage", "Yumenoashi%23euw");
+				const player = document.getElementById('player').value;
+				nodecg.sendMessage("testMessage", player);
+			});
 
-				const testReplicant = nodecg.Replicant("test-replicant");
-				// Get replicant new value if changed
-				testReplicant.on('change', (newValue, oldValue) => {
-					if (!newValue) {
-						return;
-					}
-					nodecg.log.info(`New replicant value : ${newValue}`);
-				});
+			const playerData = nodecg.Replicant('playerData');
+
+			playerData.on('change', (newValue) => {
+				document.getElementById('jsonResponse').value = JSON.stringify(newValue, null, 2);
 			});
 
 		</script>
