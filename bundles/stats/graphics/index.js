@@ -6,4 +6,4 @@ const nodecg = require("../../../cfg/nodecg");
 nodecg.Replicant('player', {defaultValue: "Player"});
 nodecg.Replicant('playerData', {defaultValue: {}});
 
-nodecg.Replicant('assets:castersOverlay');
+nodecg.Replicant('assets:statsOverlay');

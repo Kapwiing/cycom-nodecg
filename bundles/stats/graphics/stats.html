@@ -22,7 +22,7 @@
 				overflow: hidden; /* Hide scrollbars */
             }
 
-            #castersOverlay {
+            #statsOverlay {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -124,10 +124,17 @@
 				top: 18%;
 				opacity: 0.7;
 			}
+
+			#img-currentRank, #img-peakRank {
+				width: 60px;
+				height: auto;
+				margin-left: 10px;
+				z-index: 2;
+			}
 		</style>
 	</head>
 	<body>
-		<img id="castersOverlay" src="" alt="Background Image">
+		<img id="statsOverlay" src="" alt="Background Image">
 		<div class="playerName" id="player"></div>
 		<!-- Agent image container -->
 		<div id="agent-container">
@@ -190,12 +197,12 @@
 			<div class="stat-row">
 				<span class="stat-label">Current Rank: </span>
 				<span class="stat-value" id="stat-currentRank">-</span>
-				<img id="img-currentRank" src="" alt="" style="height:48px;vertical-align:middle;display:none;margin-left:10px;">
+				<img id="img-currentRank" src="" alt="">
 			</div>
 			<div class="stat-row">
 				<span class="stat-label">Peak Rank: </span>
 				<span class="stat-value" id="stat-peakRank">-</span>
-				<img id="img-peakRank" src="" alt="" style="height:48px;vertical-align:middle;display:none;margin-left:10px;">
+				<img id="img-peakRank" src="" alt="">
 			</div>
 			<div class="stat-row">
 				<span class="stat-label">Top Role: </span>
@@ -226,8 +233,8 @@
 
 			document.addEventListener('DOMContentLoaded', () => {
 				// We set the background image
-				const backgroundImage = document.getElementById('castersOverlay');
-				nodecg.Replicant('assets:castersOverlay').on('change', newValue => {
+				const backgroundImage = document.getElementById('statsOverlay');
+				nodecg.Replicant('assets:statsOverlay').on('change', newValue => {
 					backgroundImage.src = (newValue && newValue[0] && newValue[0].url) ? newValue[0].url : '';
 				});
 			});
@@ -261,7 +268,6 @@
 					rankName = rankValue.name || rankValue.rank || '';
 					rankNum = rankValue.number || rankValue.num || '';
 				} else if (typeof rankValue === 'string') {
-					// Example: "Diamond 3", "Immortal", "Gold 2"
 					const match = rankValue.match(/^([A-Za-z ]+?)(?:\s*(\d+))?$/);
 					if (match) {
 						rankName = match[1].trim();
@@ -273,7 +279,7 @@
 				}
 				const fileName = `ranks/${rankName.replace(/\s+/g, '')}_${rankNum}_Rank.png`;
 				imgElem.src = fileName;
-				imgElem.alt = 'Rank ' + rankNum;
+				// imgElem.alt = 'Rank ' + rankNum;
 				imgElem.style.display = 'inline-block';
 			}
 

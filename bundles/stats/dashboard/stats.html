@@ -88,6 +88,17 @@
 				display: block;
 				text-align: center;
 			}
+
+			#teamSelect, #teamPlayerSelect {
+				width: 95%;
+				padding: 10px;
+			}
+
+			#jsonResponse {
+				width: 95%;
+				margin-top: 10px;
+				font-family: monospace;
+			}
         </style>
 	</head>
 	<body>
@@ -97,7 +108,89 @@
 					<div class="input-field">
 						<label for="player">Player Name</label>
 						<input type="text" id="player"/>
+						<div class="input-field">
+							<label for="teamSelect">Select Team</label>
+							<select id="teamSelect">
+								<option value="">-- Select Team --</option>
+								<option value="Animatch">Animatch</option>
+								<option value="EpiClown">EpiClown</option>
+								<option value="KCT">KCT</option>
+								<option value="Asteks">Les Asteks</option>
+								<option value="MegaSuperTeam">Mega Super Team</option>
+								<option value="Tema_sa_gueule">Tema sa gueule</option>
+							</select>
+						</div>
+						<div class="input-field">
+							<label for="teamPlayerSelect">Select Player</label>
+							<select id="teamPlayerSelect" disabled>
+								<option value="">-- Select Player --</option>
+							</select>
+						</div>
+						<script>
+							const teams = {
+								Animatch: [
+									{ name: "neolardo", tag: "Trololeododo#EUW" },
+									{ name: "karma_200", tag: "Karma#A810" },
+									{ name: "minazukii", tag: "みなずき#bees" },
+									{ name: "svpcraft", tag: "svpcraft#4315" }
+								],
+								EpiClown: [
+									{ name: "sPer_", tag: "sPer#MDR" },
+									{ name: "Aurec", tag: "AuréC#Miata" },
+									{ name: "Mamrox", tag: "HBK MamRox08#MAR08" },
+									{ name: "MissMathildeuh", tag: "Mathilde#6018" }
+								],
+								KCT: [
+									{ name: "terra88", tag: "t3rra88#9401" },
+									{ name: "veptux", tag: "VepTuX#9999" },
+									{ name: "fireskii.", tag: "FireSky33#EUW" },
+									{ name: "ja_son8025", tag: "Elektriz LD#EU26" },
+									{ name: "yussuke", tag: "Baollu#EUW" }
+								],
+								Asteks: [
+									{ name: "poulethalal", tag: "Poulet Halal#Haram" }
+								],
+								MegaSuperTeam: [
+									{ name: "zerrias_", tag: "Zerrias#LOW9" },
+									{ name: "verislan", tag: "Verislan#EUW" },
+									{ name: "re9wund", tag: "ZedûlôN#EUW" },
+									{ name: "s1bioz", tag: "TYH S1biOz ツ#TYHFW" },
+									{ name: "smanigold", tag: "smanigold#5142" }
+								],
+								Tema_sa_gueule: [
+									{ name: "gigapieds", tag: "yumenoashi#EUW" },
+									{ name: "genex440", tag: "Genex440#2951" },
+									{ name: ".piera", tag: "arcane47#EUW" },
+									{ name: "_kaloo", tag: "Kaloo#8232" },
+									{ name: "criticat", tag: "Criticat02#2002" }
+								]
+							};
 
+							const teamSelect = document.getElementById('teamSelect');
+							const teamPlayerSelect = document.getElementById('teamPlayerSelect');
+							const playerInput = document.getElementById('player');
+
+							teamSelect.addEventListener('change', function() {
+								const selectedTeam = this.value;
+								teamPlayerSelect.innerHTML = '<option value="">-- Select Player --</option>';
+								if (teams[selectedTeam]) {
+									teams[selectedTeam].forEach(player => {
+										const option = document.createElement('option');
+										option.value = player.tag;
+										option.textContent = player.name;
+										teamPlayerSelect.appendChild(option);
+									});
+									teamPlayerSelect.disabled = false;
+								} else {
+									teamPlayerSelect.disabled = true;
+								}
+								playerInput.value = '';
+							});
+
+							teamPlayerSelect.addEventListener('change', function() {
+								playerInput.value = this.value;
+							});
+						</script>
 						<label for="jsonResponse">Raw JSON Response (debugging)</label>
 						<textarea id="jsonResponse" rows="10" cols="50" readonly></textarea>
 				</div>

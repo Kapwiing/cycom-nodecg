@@ -40,8 +40,8 @@
     ],
     "assetCategories": [
       {
-          "name": "castersOverlay",
-          "title": "castersOverlay",
+          "name": "statsOverlay",
+          "title": "statsOverlay",
           "allowedTypes": [
               "jpg",
               "jpeg",
