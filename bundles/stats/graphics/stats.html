@@ -33,68 +33,91 @@
 
             #player{
                 position: absolute;
-                width: 100%;
                 z-index: 2;
                 text-align: center;
-                top: 15%;
-				left: 0%;
+                top: 30%;
+				left: 6%;
             }
 
 			.playerName {
                 font-family: 'Horizon-Bold', sans-serif;
-                font-size: 80px;
-				color: rgb(114, 32, 255);
-				animation: pulse; /* referring directly to the animation's @keyframe declaration */
-				animation-duration: 2s;
+                font-size: 70px;
+				color: rgb(255, 253, 221);
             }
+
+			#player-rank {
+				font-family: 'Horizon-Bold', sans-serif;
+				z-index: 2;
+			}
 
 			#player-stats {
 				font-family: 'Horizon-Bold', sans-serif;
 				position: absolute;
-				top: 35%;
-				right: 10%;
+				bottom: 10%;
+				left: 7%;
 				z-index: 2;
-			}
-
-			.stat-row {
 				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 15px;
+				gap: 130px;
 			}
 
-			.stat-label {
-				font-size: 22px;
-				color: rgb(114, 32, 255);
+			#player-agents {
+				font-family: 'Horizon-Bold', sans-serif;
+			}
+
+			#stat-topAgent {
+				position: absolute;
+				z-index: 2;
+				bottom: 14%;
+				right: 35%;
+				font-size: min(4em, 10vw);
+				text-anchor: left;
+				line-height: 1;
 				text-align: left;
+				padding: 0;
+				margin: 0;
+			}
+
+			#stat-topRole {
+				text-align: center;
+				position: absolute;
+				z-index: 2;
+				bottom: 14.5%;
+				right: 7%;
+				font-size: 30px;
 			}
 
 			.stat-value {
-				font-size: 38px;
-				color: rgb(100, 25, 220);
-				text-align: right;
-				margin-left: 20px;
+				font-size: 40px;
+				color: rgb(255, 255, 255);
+				text-align: left;
 				flex-shrink: 0;
-				min-width: 120px;
+			}
+
+			#stat-currentRank {
+				position: absolute;
+				z-index: 2;
+				font-size: 50px;
+				left: 6.5%;
+				top: 50%;
+			}
+
+			#stat-peakRank {
+				position: absolute;
+				z-index: 2;
+				font-size: 50px;
+				left: 6.5%;
+				top: 66%;
 			}
 
 			#agent-container {
 				position: absolute;
-				top: 25%;
-				left: 10%;
+				top: 12%;
+				right: 11%;
 				z-index: 2;
 				height: 900px;
 				width: 587px;
 			}
 
-			#agent-container {
-				position: absolute;
-				top: 25%;
-				left: 10%;
-				z-index: 2;
-				height: 900px;
-				width: 587px;
-			}
 			#agent-image {
 				position: absolute;
 				z-index: 3;
@@ -112,7 +135,7 @@
 				object-fit: contain;
 				right: 50%;
 				top: 10%;
-				opacity: 0.9;
+				opacity: 0.8;
 			}
 			#agent-image3 {
 				position: absolute;
@@ -120,16 +143,26 @@
 				width: 70%;
 				height: 50%;
 				object-fit: contain;
-				left: 50%;
+				left: 55%;
 				top: 18%;
-				opacity: 0.7;
+				opacity: 0.6;
 			}
 
 			#img-currentRank, #img-peakRank {
-				width: 60px;
+				position: absolute;
+				width: 80px;
 				height: auto;
 				margin-left: 10px;
 				z-index: 2;
+			}
+
+			#img-currentRank {
+				left: 30%;
+				top: 47%;
+			}
+			#img-peakRank {
+				left: 30%;
+				top: 63%;
 			}
 		</style>
 	</head>
@@ -142,9 +175,49 @@
 			<img id="agent-image2" src="" alt="">
 			<img id="agent-image3" src="" alt="">
 		</div>
-
+		<!-- Static player stats elements -->
+		<div id="player-rank">
+			<span class="stat-value" id="stat-currentRank">-</span>
+			<img id="img-currentRank" src="" alt="">
+			<br>
+			<span class="stat-value" id="stat-peakRank">-</span>
+			<img id="img-peakRank" src="" alt="">
+		</div>
+		<div id="player-stats">
+			<span class="stat-value" id="stat-avgDamage">-</span>
+			<span class="stat-value" id="stat-avgKDR">-</span>
+			<span class="stat-value" id="stat-headshotPct">-</span>
+		</div>
+		<div id="player-agents">
+			<span class="stat-value" id="stat-topAgent">-</span>
+			<span class="stat-value" id="stat-topRole">-</span>
+		</div>
 		<script>
-		(function(){
+			// We get the replicants we want to listen to
+			const player = nodecg.Replicant('player');
+			const playerData = nodecg.Replicant('playerData');
+
+			document.addEventListener('DOMContentLoaded', () => {
+				// We set the background image
+				const backgroundImage = document.getElementById('statsOverlay');
+				nodecg.Replicant('assets:statsOverlay').on('change', newValue => {
+					backgroundImage.src = (newValue && newValue[0] && newValue[0].url) ? newValue[0].url : '';
+				});
+			});
+
+			player.on('change', (newValue) => {
+				// document.getElementById('player').innerText = newValue || '';
+				document.getElementById('player').innerText = getField(newValue, ['username']);
+			});
+
+			playerData.on('change', (newValue) => {
+				console.log('Player Data updated:', newValue);
+				updateStats(newValue);
+			});
+
+			const imgCurrentRank = document.getElementById('img-currentRank');
+			const imgPeakRank = document.getElementById('img-peakRank');
+
 			const img = document.getElementById('agent-image');
 
 			function resolveVal(obj, keys) {
@@ -157,8 +230,6 @@
 				}
 				return null;
 			}
-
-			const rep = nodecg.Replicant('playerData');
 
 			function updateAgentImage(data) {
 				const agentNames = [
@@ -179,6 +250,7 @@
 						img.src = '';
 						img.alt = '';
 					} else {
+						if (name == 'KAY/O') name = 'KAYO';
 						const file = 'agents/' + encodeURIComponent(String(name)) + '.png';
 						img.src = file;
 						img.alt = String(name);
@@ -186,73 +258,6 @@
 					}
 				});
 			}
-
-			rep.on('change', updateAgentImage);
-			// initialize if value already present
-			if (rep.value) updateAgentImage(rep.value);
-		})();
-		</script>
-		<!-- Static player stats elements -->
-		<div id="player-stats">
-			<div class="stat-row">
-				<span class="stat-label">Current Rank: </span>
-				<span class="stat-value" id="stat-currentRank">-</span>
-				<img id="img-currentRank" src="" alt="">
-			</div>
-			<div class="stat-row">
-				<span class="stat-label">Peak Rank: </span>
-				<span class="stat-value" id="stat-peakRank">-</span>
-				<img id="img-peakRank" src="" alt="">
-			</div>
-			<div class="stat-row">
-				<span class="stat-label">Top Role: </span>
-				<span class="stat-value" id="stat-topRole">-</span>
-			</div>
-			<div class="stat-row">
-				<span class="stat-label">Most played Agent: </span>
-				<span class="stat-value" id="stat-topAgent">-</span>
-			</div>
-			<div class="stat-row">
-				<span class="stat-label">Average Damage: </span>
-				<span class="stat-value" id="stat-avgDamage">-</span>
-			</div>
-			<div class="stat-row">
-				<span class="stat-label">Average K/D Ratio: </span>
-				<span class="stat-value" id="stat-avgKDR">-</span>
-			</div>
-			<div class="stat-row">
-				<span class="stat-label">Headshot %: </span>
-				<span class="stat-value" id="stat-headshotPct">-</span>
-			</div>
-		</div>
-
-		<script>
-			// We get the replicants we want to listen to
-			const player = nodecg.Replicant('player');
-			const playerData = nodecg.Replicant('playerData');
-
-			document.addEventListener('DOMContentLoaded', () => {
-				// We set the background image
-				const backgroundImage = document.getElementById('statsOverlay');
-				nodecg.Replicant('assets:statsOverlay').on('change', newValue => {
-					backgroundImage.src = (newValue && newValue[0] && newValue[0].url) ? newValue[0].url : '';
-				});
-			});
-
-			document.getElementById('player').innerText = '';
-
-			player.on('change', (newValue) => {
-				// document.getElementById('player').innerText = newValue || '';
-				document.getElementById('player').innerText = getField(newValue, ['username']);
-			});
-
-			playerData.on('change', (newValue) => {
-				console.log('Player Data updated:', newValue);
-				updateStats(newValue);
-			});
-
-			const imgCurrentRank = document.getElementById('img-currentRank');
-			const imgPeakRank = document.getElementById('img-peakRank');
 
 			function setRankImage(imgElem, rankValue) {
 				if (!rankValue || rankValue === '-') {
@@ -367,6 +372,19 @@
 					topAgent3: ['topAgent3','agent3','thirdFavoriteAgent']
 				};
 
+				const statIds = [
+					'player',
+					'player-stats',
+					'agent-container'
+				];
+
+				// // Fade out
+				// statIds.forEach(id => {
+				// 	const el = document.getElementById(id);
+				// 	if (el) el.style.transition = 'opacity 0.8s';
+				// 	if (el) el.style.opacity = '0';
+				// });
+
 				document.getElementById('player').innerText = getField(newValue, ['username']);
 				document.getElementById('stat-currentRank').textContent = getField(newValue, mapping.currentRank);
 				document.getElementById('stat-peakRank').textContent = getField(newValue, mapping.peakRank);
@@ -378,6 +396,16 @@
 
 				setRankImage(imgCurrentRank, getField(newValue, mapping.currentRank));
 				setRankImage(imgPeakRank, getField(newValue, mapping.peakRank));
+
+				updateAgentImage(newValue);
+
+				// setTimeout(() => {
+				// 	// Fade in
+				// 	statIds.forEach(id => {
+				// 		const el = document.getElementById(id);
+				// 		if (el) el.style.opacity = '1';
+				// 	});
+				// }, 800);
 			}
 
 			// Initialize if value is already present
