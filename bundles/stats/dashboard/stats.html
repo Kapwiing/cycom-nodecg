@@ -112,12 +112,15 @@
 							<label for="teamSelect">Select Team</label>
 							<select id="teamSelect">
 								<option value="">-- Select Team --</option>
+								<option value="Alizium">Alizium</option>
 								<option value="Animatch">Animatch</option>
 								<option value="EpiClown">EpiClown</option>
 								<option value="KCT">KCT</option>
-								<option value="Asteks">Les Asteks</option>
-								<option value="MegaSuperTeam">Mega Super Team</option>
+								<option value="Les_Asteks">Les Asteks</option>
+								<option value="Mega_Super_Team">Mega Super Team</option>
+								<option value="Sussy">Sussy</option>
 								<option value="Tema_sa_gueule">Tema sa gueule</option>
+								<option value="Puff_Goût_Paff">Puff Goût Paff</option>
 							</select>
 						</div>
 						<div class="input-field">
@@ -128,18 +131,31 @@
 						</div>
 						<script>
 							const teams = {
+								Alizium: [
+									{ name: "etrerium", tag: "ALZ Etrerium#3424" },
+									{ name: "goohmni", tag: "ALZ ÕcÕ#gomni" },
+									{ name: "leo7757", tag: "Leolienne#5094" },
+									{ name: "matt_beuz", tag: "Mαtt#9446" },
+									{ name: "failaxite", tag: "failaxite#3268" },
+									{ name: "stormdragon1404", tag: "K4RMIN#1404" }
+								],
+
 								Animatch: [
 									{ name: "neolardo", tag: "Trololeododo#EUW" },
-									{ name: "karma_200", tag: "Karma#A810" },
+									{ name: "svpcraft", tag: "svpcraft#4315" },
 									{ name: "minazukii", tag: "みなずき#bees" },
-									{ name: "svpcraft", tag: "svpcraft#4315" }
+									{ name: "garmimatum", tag: "GARMIMATUM#3742" },
+									{ name: "karma_200", tag: "Karma#A810" }
 								],
+
 								EpiClown: [
 									{ name: "sPer_", tag: "sPer#MDR" },
-									{ name: "Aurec", tag: "AuréC#Miata" },
+									{ name: "MissMathildeuh", tag: "Mathilde#6018" },
 									{ name: "Mamrox", tag: "HBK MamRox08#MAR08" },
-									{ name: "MissMathildeuh", tag: "Mathilde#6018" }
+									{ name: "Aurec", tag: "AuréC#Miata" },
+									{ name: "Shoya", tag: "The Dart Goblin#C R" }
 								],
+
 								KCT: [
 									{ name: "terra88", tag: "t3rra88#9401" },
 									{ name: "veptux", tag: "VepTuX#9999" },
@@ -147,22 +163,40 @@
 									{ name: "ja_son8025", tag: "Elektriz LD#EU26" },
 									{ name: "yussuke", tag: "Baollu#EUW" }
 								],
-								Asteks: [
+
+								Les_Asteks: [
 									{ name: "poulethalal", tag: "Poulet Halal#Haram" }
 								],
-								MegaSuperTeam: [
+
+								Mega_Super_Team: [
 									{ name: "zerrias_", tag: "Zerrias#LOW9" },
 									{ name: "verislan", tag: "Verislan#EUW" },
 									{ name: "re9wund", tag: "ZedûlôN#EUW" },
 									{ name: "s1bioz", tag: "TYH S1biOz ツ#TYHFW" },
 									{ name: "smanigold", tag: "smanigold#5142" }
 								],
+
+								Sussy: [
+									{ name: "adamherosil", tag: "Adamherosil#EUW" },
+									{ name: "eonpvp", tag: "EonPvP#1310" },
+									{ name: "binksblacktorch", tag: "Wasteland World#宾克斯" },
+									{ name: "newwlutin", tag: "NewwLutin#EUW" },
+									{ name: "dodo953", tag: "D0D0 du 95#EUW" },
+									{ name: "__ulysse", tag: "UΙysse#EUW" }
+								],
+
 								Tema_sa_gueule: [
 									{ name: "gigapieds", tag: "yumenoashi#EUW" },
-									{ name: "genex440", tag: "Genex440#2951" },
-									{ name: ".piera", tag: "arcane47#EUW" },
+									{ name: "criticat", tag: "Criticat02#2002" },
 									{ name: "_kaloo", tag: "Kaloo#8232" },
-									{ name: "criticat", tag: "Criticat02#2002" }
+									{ name: ".piera", tag: "arcane47#EUW" },
+									{ name: "genex440", tag: "Genex440#2951" }
+								],
+
+								Puff_Goût_Paff: [
+									{ name: "zach5817", tag: "Tnul#7839" },
+									{ name: "willplay002", tag: "willplay 002#9071" },
+									{ name: "lengevin25", tag: "lengevin#8527" }
 								]
 							};
 

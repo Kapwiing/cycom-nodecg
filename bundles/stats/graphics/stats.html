@@ -16,6 +16,7 @@
 			}
 
 			body, html {
+				font-family: "Horizon-Bold";
                 height: 100%;
                 margin: 0;
                 position: relative;
@@ -35,42 +36,40 @@
                 position: absolute;
                 z-index: 2;
                 text-align: center;
-                top: 30%;
+                top: 29.7%;
 				left: 6%;
             }
 
 			.playerName {
-                font-family: 'Horizon-Bold', sans-serif;
-                font-size: 70px;
+                font-size: 68px;
 				color: rgb(255, 253, 221);
             }
 
 			#player-rank {
-				font-family: 'Horizon-Bold', sans-serif;
 				z-index: 2;
 			}
 
 			#player-stats {
-				font-family: 'Horizon-Bold', sans-serif;
 				position: absolute;
-				bottom: 10%;
-				left: 7%;
 				z-index: 2;
+				bottom: 9.5%;
 				display: flex;
-				gap: 130px;
-			}
-
-			#player-agents {
-				font-family: 'Horizon-Bold', sans-serif;
+				justify-content: space-evenly;
+				width: 900px;
+				text-align: center;
+				gap: 0;
 			}
 
 			#stat-topAgent {
 				position: absolute;
 				z-index: 2;
 				bottom: 14%;
-				right: 35%;
-				font-size: min(4em, 10vw);
-				text-anchor: left;
+				left: 51%;
+				max-width: 40vw;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				font-size: 50px;
 				line-height: 1;
 				text-align: left;
 				padding: 0;
@@ -96,7 +95,7 @@
 			#stat-currentRank {
 				position: absolute;
 				z-index: 2;
-				font-size: 50px;
+				font-size: 45px;
 				left: 6.5%;
 				top: 50%;
 			}
@@ -104,7 +103,7 @@
 			#stat-peakRank {
 				position: absolute;
 				z-index: 2;
-				font-size: 50px;
+				font-size: 45px;
 				left: 6.5%;
 				top: 66%;
 			}
@@ -152,16 +151,14 @@
 				position: absolute;
 				width: 80px;
 				height: auto;
-				margin-left: 10px;
+				left: 31.5%;
 				z-index: 2;
 			}
 
 			#img-currentRank {
-				left: 30%;
 				top: 47%;
 			}
 			#img-peakRank {
-				left: 30%;
 				top: 63%;
 			}
 		</style>
@@ -372,19 +369,6 @@
 					topAgent3: ['topAgent3','agent3','thirdFavoriteAgent']
 				};
 
-				const statIds = [
-					'player',
-					'player-stats',
-					'agent-container'
-				];
-
-				// // Fade out
-				// statIds.forEach(id => {
-				// 	const el = document.getElementById(id);
-				// 	if (el) el.style.transition = 'opacity 0.8s';
-				// 	if (el) el.style.opacity = '0';
-				// });
-
 				document.getElementById('player').innerText = getField(newValue, ['username']);
 				document.getElementById('stat-currentRank').textContent = getField(newValue, mapping.currentRank);
 				document.getElementById('stat-peakRank').textContent = getField(newValue, mapping.peakRank);
@@ -398,14 +382,6 @@
 				setRankImage(imgPeakRank, getField(newValue, mapping.peakRank));
 
 				updateAgentImage(newValue);
-
-				// setTimeout(() => {
-				// 	// Fade in
-				// 	statIds.forEach(id => {
-				// 		const el = document.getElementById(id);
-				// 		if (el) el.style.opacity = '1';
-				// 	});
-				// }, 800);
 			}
 
 			// Initialize if value is already present
