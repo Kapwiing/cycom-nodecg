@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Player Stats</title>
+		<meta charset="UTF-8" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<style>
+            body {
+                display: flex;
+                justify-content: center;
+                font-family: Arial, sans-serif;
+            }
+
+			#updateCast {
+                padding: 20px;
+                border-radius: 5px;
+            }
+
+			.cast-info {
+				display: flex;
+			}
+
+			.cast1-info {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.vert-separator {
+				width: 20px;
+				border-left: 4px solid;
+				color: #9daecf;
+			}
+
+			#updateStatsbutton {
+				background-color: #04d400;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+				margin-bottom: 20px;
+			}
+			#updateStatsbutton:hover {
+				background-color: #018620;
+			}
+
+			#getStatsButton {
+				background-color: #007BFF;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+				margin-bottom: 20px;
+			}
+			#getStatsButton:hover {
+				background-color: #0056b3;
+			}
+
+			#clearStatsButton {
+				background-color: #dc3545;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 5px;
+				cursor: pointer;
+				margin-bottom: 20px;
+			}
+			#clearStatsButton:hover {
+				background-color: #a71d2a;
+			}
+
+			.input-field {
+				display: inline-block;
+				width: 90%;
+			}
+			.input-field input {
+				width: 90%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+			}
+			.input-field label {
+				font-weight: bold;
+			}
+			.update-button {
+				display: block;
+				text-align: center;
+			}
+
+			#teamSelect, #teamPlayerSelect {
+				width: 95%;
+				padding: 10px;
+			}
+
+			#jsonResponse {
+				width: 95%;
+				margin-top: 10px;
+				font-family: monospace;
+			}
+        </style>
+	</head>
+	<body>
+		<form id="updateCast">
+			<div class="cast-info">
+				<div class="cast1-info">
+					<div class="input-field">
+						<label for="player">Player Name</label>
+						<input type="text" id="player"/>
+						<div class="input-field">
+							<label for="teamSelect">Select Team</label>
+							<select id="teamSelect">
+								<option value="">-- Select Team --</option>
+								<option value="Alizium">Alizium</option>
+								<option value="Animatch">Animatch</option>
+								<option value="EpiClown">EpiClown</option>
+								<option value="KCT">KCT</option>
+								<option value="Les_Asteks">Les Asteks</option>
+								<option value="Mega_Super_Team">Mega Super Team</option>
+								<option value="Sussy">Sussy</option>
+								<option value="Tema_sa_gueule">Tema sa gueule</option>
+								<option value="Puff_Goût_Paff">Puff Goût Paff</option>
+							</select>
+						</div>
+						<div class="input-field">
+							<label for="teamPlayerSelect">Select Player</label>
+							<select id="teamPlayerSelect" disabled>
+								<option value="">-- Select Player --</option>
+							</select>
+						</div>
+						<script>
+							const teams = {
+								Alizium: [
+									{ name: "etrerium", tag: "ALZ Etrerium#3424" },
+									{ name: "goohmni", tag: "ALZ ÕcÕ#gomni" },
+									{ name: "leo7757", tag: "Leolienne#5094" },
+									{ name: "matt_beuz", tag: "Mαtt#9446" },
+									{ name: "failaxite", tag: "failaxite#3268" },
+									{ name: "stormdragon1404", tag: "K4RMIN#1404" }
+								],
+
+								Animatch: [
+									{ name: "neolardo", tag: "Trololeododo#EUW" },
+									{ name: "svpcraft", tag: "svpcraft#4315" },
+									{ name: "minazukii", tag: "みなずき#bees" },
+									{ name: "garmimatum", tag: "GARMIMATUM#3742" },
+									{ name: "karma_200", tag: "Karma#A810" }
+								],
+
+								EpiClown: [
+									{ name: "sPer_", tag: "sPer#MDR" },
+									{ name: "MissMathildeuh", tag: "Mathilde#6018" },
+									{ name: "Mamrox", tag: "HBK MamRox08#MAR08" },
+									{ name: "Aurec", tag: "AuréC#Miata" },
+									{ name: "Shoya", tag: "The Dart Goblin#C R" }
+								],
+
+								KCT: [
+									{ name: "terra88", tag: "t3rra88#9401" },
+									{ name: "veptux", tag: "VepTuX#9999" },
+									{ name: "fireskii.", tag: "FireSky33#EUW" },
+									{ name: "ja_son8025", tag: "Elektriz LD#EU26" },
+									{ name: "yussuke", tag: "Baollu#EUW" }
+								],
+
+								Les_Asteks: [
+									{ name: "poulethalal", tag: "Poulet Halal#Haram" }
+								],
+
+								Mega_Super_Team: [
+									{ name: "zerrias_", tag: "Zerrias#LOW9" },
+									{ name: "verislan", tag: "Verislan#EUW" },
+									{ name: "re9wund", tag: "ZedûlôN#EUW" },
+									{ name: "s1bioz", tag: "TYH S1biOz ツ#TYHFW" },
+									{ name: "smanigold", tag: "smanigold#5142" }
+								],
+
+								Sussy: [
+									{ name: "adamherosil", tag: "Adamherosil#EUW" },
+									{ name: "eonpvp", tag: "EonPvP#1310" },
+									{ name: "binksblacktorch", tag: "Wasteland World#宾克斯" },
+									{ name: "newwlutin", tag: "NewwLutin#EUW" },
+									{ name: "dodo953", tag: "D0D0 du 95#EUW" },
+									{ name: "__ulysse", tag: "UΙysse#EUW" }
+								],
+
+								Tema_sa_gueule: [
+									{ name: "gigapieds", tag: "yumenoashi#EUW" },
+									{ name: "criticat", tag: "Criticat02#2002" },
+									{ name: "_kaloo", tag: "Kaloo#8232" },
+									{ name: ".piera", tag: "arcane47#EUW" },
+									{ name: "genex440", tag: "Genex440#2951" }
+								],
+
+								Puff_Goût_Paff: [
+									{ name: "zach5817", tag: "Tnul#7839" },
+									{ name: "willplay002", tag: "willplay 002#9071" },
+									{ name: "lengevin25", tag: "lengevin#8527" }
+								]
+							};
+
+							const teamSelect = document.getElementById('teamSelect');
+							const teamPlayerSelect = document.getElementById('teamPlayerSelect');
+							const playerInput = document.getElementById('player');
+
+							teamSelect.addEventListener('change', function() {
+								const selectedTeam = this.value;
+								teamPlayerSelect.innerHTML = '<option value="">-- Select Player --</option>';
+								if (teams[selectedTeam]) {
+									teams[selectedTeam].forEach(player => {
+										const option = document.createElement('option');
+										option.value = player.tag;
+										option.textContent = player.name;
+										teamPlayerSelect.appendChild(option);
+									});
+									teamPlayerSelect.disabled = false;
+								} else {
+									teamPlayerSelect.disabled = true;
+								}
+								playerInput.value = '';
+							});
+
+							teamPlayerSelect.addEventListener('change', function() {
+								playerInput.value = this.value;
+							});
+						</script>
+						<label for="jsonResponse">Raw JSON Response (debugging)</label>
+						<textarea id="jsonResponse" rows="10" cols="50" readonly></textarea>
+				</div>
+			</div>
+			<div class="update-button">
+				<button id="getStatsButton" type="button">Get Stats</button>
+				<button id="updateStatsbutton" type="submit">Update Stats</button>
+				<button id="clearStatsButton" type="button">Clear Stats</button>
+			</div>
+			<script>
+				document.getElementById('clearStatsButton').addEventListener('click', () => {
+					const playerDataRep = nodecg.Replicant('playerData');
+					playerDataRep.value = {};
+					const playerRep = nodecg.Replicant('player');
+					playerRep.value = "";
+				});
+			</script>
+		</form>
+		<script>
+			// Code for the get stats button
+			const getStatsButton = document.getElementById('getStatsButton');
+
+			getStatsButton.addEventListener('click', () => {
+				const player = document.getElementById('player').value;
+				nodecg.sendMessage("testMessage", player);
+			});
+
+			const player = nodecg.Replicant('player');
+			const playerData = nodecg.Replicant('playerData');
+
+			player.on('change', (newValue) => {
+				document.getElementById('player').value = newValue || '';
+			});
+
+			playerData.on('change', (newValue) => {
+				document.getElementById('jsonResponse').value = JSON.stringify(newValue, null, 2);
+			});
+
+			const updateStatsForm = document.getElementById('updateStatsbutton');
+
+			updateStatsForm.addEventListener('click', (event) => {
+				event.preventDefault();
+				const playerDataRep = nodecg.Replicant('playerData');
+				playerDataRep.value = document.getElementById('jsonResponse').value ? JSON.parse(document.getElementById('jsonResponse').value) : {};
+			});
+		</script>
+	</body>
+</html>

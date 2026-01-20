@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Player Stats Overlay</title>
+		<meta charset="UTF-8" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+		crossorigin="anonymous" />
+		<style>
+			@font-face {
+				font-family: "Horizon-Bold";
+				src: url("shared/horizon.otf") format("opentype");
+				font-weight: bold;
+				font-style: normal;
+			}
+
+			body, html {
+				font-family: "Horizon-Bold";
+                height: 100%;
+                margin: 0;
+                position: relative;
+				overflow: hidden; /* Hide scrollbars */
+            }
+
+            #statsOverlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+            }
+
+            #player{
+                position: absolute;
+                z-index: 2;
+                text-align: center;
+                top: 29.7%;
+				left: 6%;
+            }
+
+			.playerName {
+                font-size: 68px;
+				color: rgb(255, 253, 221);
+            }
+
+			#player-rank {
+				z-index: 2;
+			}
+
+			#player-stats {
+				position: absolute;
+				z-index: 2;
+				bottom: 9.5%;
+				display: flex;
+				justify-content: space-evenly;
+				width: 900px;
+				text-align: center;
+				gap: 0;
+			}
+
+			#stat-topAgent {
+				position: absolute;
+				z-index: 2;
+				bottom: 14%;
+				left: 51%;
+				max-width: 40vw;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				font-size: 50px;
+				line-height: 1;
+				text-align: left;
+				padding: 0;
+				margin: 0;
+			}
+
+			#stat-topRole {
+				text-align: center;
+				position: absolute;
+				z-index: 2;
+				bottom: 14.5%;
+				right: 7%;
+				font-size: 30px;
+			}
+
+			.stat-value {
+				font-size: 40px;
+				color: rgb(255, 255, 255);
+				text-align: left;
+				flex-shrink: 0;
+			}
+
+			#stat-currentRank {
+				position: absolute;
+				z-index: 2;
+				font-size: 45px;
+				left: 6.5%;
+				top: 50%;
+			}
+
+			#stat-peakRank {
+				position: absolute;
+				z-index: 2;
+				font-size: 45px;
+				left: 6.5%;
+				top: 66%;
+			}
+
+			#agent-container {
+				position: absolute;
+				top: 12%;
+				right: 11%;
+				z-index: 2;
+				height: 900px;
+				width: 587px;
+			}
+
+			#agent-image {
+				position: absolute;
+				z-index: 3;
+				width: 100%;
+				height: 80%;
+				object-fit: contain;
+				left: 0;
+				top: 0;
+			}
+			#agent-image2 {
+				position: absolute;
+				z-index: 2;
+				width: 80%;
+				height: 60%;
+				object-fit: contain;
+				right: 50%;
+				top: 10%;
+				opacity: 0.8;
+			}
+			#agent-image3 {
+				position: absolute;
+				z-index: 1;
+				width: 70%;
+				height: 50%;
+				object-fit: contain;
+				left: 55%;
+				top: 18%;
+				opacity: 0.6;
+			}
+
+			#img-currentRank, #img-peakRank {
+				position: absolute;
+				width: 80px;
+				height: auto;
+				left: 31.5%;
+				z-index: 2;
+			}
+
+			#img-currentRank {
+				top: 47%;
+			}
+			#img-peakRank {
+				top: 63%;
+			}
+		</style>
+	</head>
+	<body>
+		<img id="statsOverlay" src="" alt="Background Image">
+		<div class="playerName" id="player"></div>
+		<!-- Agent image container -->
+		<div id="agent-container">
+			<img id="agent-image" src="" alt="">
+			<img id="agent-image2" src="" alt="">
+			<img id="agent-image3" src="" alt="">
+		</div>
+		<!-- Static player stats elements -->
+		<div id="player-rank">
+			<span class="stat-value" id="stat-currentRank">-</span>
+			<img id="img-currentRank" src="" alt="">
+			<br>
+			<span class="stat-value" id="stat-peakRank">-</span>
+			<img id="img-peakRank" src="" alt="">
+		</div>
+		<div id="player-stats">
+			<span class="stat-value" id="stat-avgDamage">-</span>
+			<span class="stat-value" id="stat-avgKDR">-</span>
+			<span class="stat-value" id="stat-headshotPct">-</span>
+		</div>
+		<div id="player-agents">
+			<span class="stat-value" id="stat-topAgent">-</span>
+			<span class="stat-value" id="stat-topRole">-</span>
+		</div>
+		<script>
+			// We get the replicants we want to listen to
+			const player = nodecg.Replicant('player');
+			const playerData = nodecg.Replicant('playerData');
+
+			document.addEventListener('DOMContentLoaded', () => {
+				// We set the background image
+				const backgroundImage = document.getElementById('statsOverlay');
+				nodecg.Replicant('assets:statsOverlay').on('change', newValue => {
+					backgroundImage.src = (newValue && newValue[0] && newValue[0].url) ? newValue[0].url : '';
+				});
+			});
+
+			player.on('change', (newValue) => {
+				// document.getElementById('player').innerText = newValue || '';
+				document.getElementById('player').innerText = getField(newValue, ['username']);
+			});
+
+			playerData.on('change', (newValue) => {
+				console.log('Player Data updated:', newValue);
+				updateStats(newValue);
+			});
+
+			const imgCurrentRank = document.getElementById('img-currentRank');
+			const imgPeakRank = document.getElementById('img-peakRank');
+
+			const img = document.getElementById('agent-image');
+
+			function resolveVal(obj, keys) {
+				if (!obj) return null;
+				for (const k of keys) {
+					const v = obj[k];
+					if (v === undefined || v === null) continue;
+					if (typeof v === 'object' && 'value' in v) return v.value;
+					return v;
+				}
+				return null;
+			}
+
+			function updateAgentImage(data) {
+				const agentNames = [
+					resolveVal(data, ['topAgent']),
+					resolveVal(data, ['topAgent2']),
+					resolveVal(data, ['topAgent3'])
+				];
+				const imgElems = [
+					document.getElementById('agent-image'),
+					document.getElementById('agent-image2'),
+					document.getElementById('agent-image3')
+				];
+
+			 agentNames.forEach((name, i) => {
+					const img = imgElems[i];
+					if (!name) {
+						img.style.display = 'none';
+						img.src = '';
+						img.alt = '';
+					} else {
+						if (name == 'KAY/O') name = 'KAYO';
+						const file = 'agents/' + encodeURIComponent(String(name)) + '.png';
+						img.src = file;
+						img.alt = String(name);
+						img.style.display = 'block';
+					}
+				});
+			}
+
+			function setRankImage(imgElem, rankValue) {
+				if (!rankValue || rankValue === '-') {
+					imgElem.style.display = 'none';
+					imgElem.src = '';
+					imgElem.alt = '';
+					return;
+				}
+
+				let rankName = '';
+				let rankNum = '';
+				if (typeof rankValue === 'object') {
+					rankName = rankValue.name || rankValue.rank || '';
+					rankNum = rankValue.number || rankValue.num || '';
+				} else if (typeof rankValue === 'string') {
+					const match = rankValue.match(/^([A-Za-z ]+?)(?:\s*(\d+))?$/);
+					if (match) {
+						rankName = match[1].trim();
+						rankNum = match[2] ? match[2] : '';
+					} else {
+						rankName = rankValue;
+						rankNum = '';
+					}
+				}
+				const fileName = `ranks/${rankName.replace(/\s+/g, '')}_${rankNum}_Rank.png`;
+				imgElem.src = fileName;
+				// imgElem.alt = 'Rank ' + rankNum;
+				imgElem.style.display = 'inline-block';
+			}
+
+			// Helper to safely pull multiple possible keys
+			function getField(obj, keys) {
+				if (!obj) return '-';
+				for (const k of keys) {
+					if (obj[k] !== undefined && obj[k] !== null) return obj[k];
+				}
+				return '-';
+			}
+
+			function formatPercent(val) {
+				if (val === '-' || val === null || val === undefined) return '-';
+				const n = Number(val);
+				if (isNaN(n)) return String(val);
+				// handle values given as 0.12 or 12
+				if (Math.abs(n) <= 1) return (n * 100).toFixed(1) + '%';
+				return n.toFixed(1) + '%';
+			}
+
+			function formatNumber(val, decimals = 1) {
+				if (val === '-' || val === null || val === undefined) return '-';
+				const n = Number(val);
+				if (isNaN(n)) return String(val);
+				return n.toFixed(decimals);
+			}
+			// Normalize values that may be objects like { value: "...", found: true }
+			function getField(obj, keys) {
+				// If obj itself is the value-object, return its .value
+				if (obj && typeof obj === 'object' && ('value' in obj)) {
+					const v = obj.value;
+					return (v === undefined || v === null) ? '-' : v;
+				}
+				if (!obj) return '-';
+				for (const k of keys) {
+					const v = obj[k];
+					if (v === undefined || v === null) continue;
+					if (typeof v === 'object' && ('value' in v)) {
+						const val = v.value;
+						return (val === undefined || val === null) ? '-' : val;
+					}
+					return v;
+				}
+				return '-';
+			}
+
+			// Accept strings like "17.1%", numbers in [0,1] or 0-100, and normalize formatting
+			function formatPercent(val) {
+				if (val === '-' || val === null || val === undefined) return '-';
+
+				// If it's a string that already ends with '%', normalize decimals
+				if (typeof val === 'string') {
+					const s = val.trim();
+					if (s.endsWith('%')) {
+						const num = Number(s.slice(0, -1));
+						if (!isNaN(num)) return num.toFixed(1) + '%';
+						return s;
+					}
+					// try parsing numeric string
+					const n = Number(s);
+					if (!isNaN(n)) {
+						if (Math.abs(n) <= 1) return (n * 100).toFixed(1) + '%';
+						return n.toFixed(1) + '%';
+					}
+					return s;
+				}
+
+				const n = Number(val);
+				if (isNaN(n)) return String(val);
+				if (Math.abs(n) <= 1) return (n * 100).toFixed(1) + '%';
+				return n.toFixed(1) + '%';
+			}
+			// Update function that maps common possible keys to each stat
+			function updateStats(newValue) {
+				const mapping = {
+					currentRank: ['currentRank','rank','rankCurrent','current_rank'],
+					peakRank: ['peakRank','peak','highestRank','peak_rank'],
+					topRole: ['topRole','role','top_role'],
+					avgDamage: ['avgDamage','averageDamage','avg_damage','avgDmg','dmgAvg'],
+					avgKDR: ['avgKDR','kdr','avg_kdr','kdrAvg'],
+					headshotPct: ['headshotPct','hsPercent','headshot_pct','hs','headshotPctPct'],
+					topAgent: ['topAgent','agent','top_agent','favoriteAgent'],
+					topAgent2: ['topAgent2','agent2','secondFavoriteAgent'],
+					topAgent3: ['topAgent3','agent3','thirdFavoriteAgent']
+				};
+
+				document.getElementById('player').innerText = getField(newValue, ['username']);
+				document.getElementById('stat-currentRank').textContent = getField(newValue, mapping.currentRank);
+				document.getElementById('stat-peakRank').textContent = getField(newValue, mapping.peakRank);
+				document.getElementById('stat-topRole').textContent = getField(newValue, mapping.topRole);
+				document.getElementById('stat-avgDamage').textContent = formatNumber(getField(newValue, mapping.avgDamage), 0);
+				document.getElementById('stat-avgKDR').textContent = formatNumber(getField(newValue, mapping.avgKDR), 2);
+				document.getElementById('stat-headshotPct').textContent = formatPercent(getField(newValue, mapping.headshotPct));
+				document.getElementById('stat-topAgent').textContent = getField(newValue, mapping.topAgent);
+
+				setRankImage(imgCurrentRank, getField(newValue, mapping.currentRank));
+				setRankImage(imgPeakRank, getField(newValue, mapping.peakRank));
+
+				updateAgentImage(newValue);
+			}
+
+			// Initialize if value is already present
+			if (playerData.value) updateStats(playerData.value);
+		</script>
+	</body>
+</html>

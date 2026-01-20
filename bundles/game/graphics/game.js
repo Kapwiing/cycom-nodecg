@@ -8,6 +8,9 @@ nodecg.Replicant('team2', {defaultValue: "team 2"});
 nodecg.Replicant('team1Points', {defaultValue: 0});
 nodecg.Replicant('team2Points', {defaultValue: 0});
 
+nodecg.Replicant('teamLogo1', {defaultValue: ""});
+nodecg.Replicant('teamLogo2', {defaultValue: ""});
+
 nodecg.Replicant('matchType', {defaultValue: "Grand Finals"});
 nodecg.Replicant('bestOf', {defaultValue: 3});
 

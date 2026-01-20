@@ -90,6 +90,16 @@
 			.input-field-short label {
 				font-weight: bold;
 			}
+			select {
+				padding: 10px;
+				margin-bottom: 10px;
+				border-radius: 5px;
+				border: 1px solid #ddd;
+				background-color: #f8f9fa;
+				font-size: 16px;
+				width: 95%;
+				box-sizing: border-box;
+			}
 			.update-button {
 				display: block;
 				text-align: center;
@@ -115,6 +125,22 @@
 						<label for="team1Points">Team 1 Points</label>
 						<input type="number" id="team1Points"/>
 					</div>
+					<div class="input-field">
+						<label for="team1Logo">Team 1 Logo Name</label>
+						<select id="team1Logo">
+							<option value="">Select Logo</option>
+							<option value="Alizium.jpg">Alizium</option>
+							<option value="Animatch.png">Animatch</option>
+							<option value="Astek.png">Astek</option>
+							<option value="EpiClown.webp">EpiClown</option>
+							<option value="KCT.png">KCT</option>
+							<option value="MST.png">MST</option>
+							<option value="PuffGoutPaff.jpg">Puff Gout Paff</option>
+							<option value="Sussy.jpg">Sussy</option>
+							<option value="Temasagueule.png">Tema sa gueule</option>
+							<option value="Ziggy.jpg">Ziggy</option>
+						</select>
+					</div>
 				</div>
 				<div class="vert-separator"></div>
 				<!--Team 2 Informations -->
@@ -126,6 +152,22 @@
 					<div class="input-field">
 						<label for="team2Points">Team 2 Points</label>
 						<input type="number" id="team2Points"/>
+					</div>
+					<div class="input-field">
+						<label for="team2Logo">Team 2 Logo Name</label>
+						<select id="team2Logo">
+							<option value="">Select Logo</option>
+							<option value="Alizium.jpg">Alizium</option>
+							<option value="Animatch.png">Animatch</option>
+							<option value="Astek.png">Astek</option>
+							<option value="EpiClown.webp">EpiClown</option>
+							<option value="KCT.png">KCT</option>
+							<option value="MST.png">MST</option>
+							<option value="PuffGoutPaff.jpg">Puff Gout Paff</option>
+							<option value="Sussy.jpg">Sussy</option>
+							<option value="Temasagueule.png">Tema sa gueule</option>
+							<option value="Ziggy.jpg">Ziggy</option>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -159,6 +201,9 @@
 			const team1Points = nodecg.Replicant('team1Points');
 			const team2Points = nodecg.Replicant('team2Points');
 
+			const teamLogo1 = nodecg.Replicant('teamLogo1');
+			const teamLogo2 = nodecg.Replicant('teamLogo2');
+
 
 			team1.on('change', (newValue, oldValue) => {
 				document.getElementById('team1').value = newValue;
@@ -191,6 +236,8 @@
 				team2Points.value = document.getElementById('team2Points').value;
 				matchType.value = document.getElementById('matchType').value;
 				bestOf.value = document.getElementById('bestOf').value;
+				teamLogo1.value = document.getElementById('team1Logo').value;
+				teamLogo2.value = document.getElementById('team2Logo').value;
 			});
 
 			// Code for the swap button
@@ -207,6 +254,11 @@
 				const tempPoints = team1PointsInput.value;
 				team1PointsInput.value = team2PointsInput.value;
 				team2PointsInput.value = tempPoints;
+				const team1LogoInput = document.getElementById('team1Logo');
+				const team2LogoInput = document.getElementById('team2Logo');
+				const tempLogo = team1LogoInput.value;
+				team1LogoInput.value = team2LogoInput.value;
+				team2LogoInput.value = tempLogo;
 			});
 		</script>
 	</body>

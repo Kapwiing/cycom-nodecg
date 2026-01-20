@@ -6,18 +6,14 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 		<style>
 			@font-face {
-				font-family: "Tungsten-Bold";
-				src: url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.eot");
-				src: url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.eot?#iefix")format("embedded-opentype"),
-				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.woff2")format("woff2"),
-				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.woff")format("woff"),
-				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.ttf")format("truetype"),
-				url("https://db.onlinewebfonts.com/t/561f38b1f4570de0fb8a39d691ab058c.svg#Tungsten-Bold")format("svg");
+				font-family: "Horizon-Bold";
+				src: url("shared/horizon.otf") format("opentype");
 				font-weight: bold;
 				font-style: normal;
 			}
 
 			body, html {
+				font-family: "Horizon-Bold";
                 height: 100%;
                 margin: 0;
                 position: relative;
@@ -30,27 +26,26 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                z-index: 1;
+                z-index: 2;
             }
 
             #team1, #team2 {
-                position: absolute;
-                width: 100%;
-                z-index: 2;
-                text-align: center;
+				position: absolute;
+				z-index: 2;
+				width: 100%;
+				top: 0.3%;
+				text-align: center;
             }
             #team1 {
-                top: 7.8%;
-				right: 7%;
+				right: 18%;
             }
             #team2 {
-				top: 7.8%;
-				left: 7%;
+				left: 18%;
             }
 
 			#team1Points {
                 position: absolute;
-                z-index: 2;
+                z-index: 3;
 				text-align: center;
 				top: 11.5%;
 				left: 36.6%;
@@ -60,39 +55,71 @@
 			}
 			#team2Points {
                 position: absolute;
-                z-index: 2;
+                z-index: 3;
 				text-align: center;
 				top: 11.5%;
 				left: 57.8%;
 				font-size: 10px;
-				color: white;
+				color: rgb(255, 255, 255);
 				letter-spacing: 0.15em;
 			}
 
             .teamName {
-                font-family: 'Tungsten-Bold', sans-serif;
-                font-size: 31px;
-				color: white;
+                font-family: 'Horizon-Bold', sans-serif;
+                font-size: 20px;
+				color: rgb(255, 255, 255);
             }
 			#matchType {
 				position: absolute;
+				top: 0.3%;
                 width: 100%;
-                z-index: 2;
+                z-index: 3;
                 text-align: center;
-				font-family: 'Tungsten-Bold', sans-serif;
-				font-size: 26px;
+				font-family: 'Horizon-Bold', sans-serif;
+				font-size: 18px;
 				color: white;
 			}
 			#bestOf {
 				position: absolute;
 				width: 100%;
 				top: 11.5%;
-				z-index: 2;
+				z-index: 3;
 				text-align: center;
-				font-family: 'Tungsten-Bold', sans-serif;
+				font-family: 'Horizon-Bold', sans-serif;
 				font-size: 20px;
 				color: white;
 			}
+
+			.team-bg {
+				position: absolute;
+				float: left;
+				background-color: rgb(24, 23, 70);
+				width: 60px;
+				height: 60px;
+				z-index: 0;
+				clear: both;
+				top: 0.4%;
+			}
+
+			.team-logo {
+				position: absolute;
+				width: 60px;
+				height: 60px;
+				aspect-ratio: 1 / 1;
+				background-size: cover;
+				background-repeat: no-repeat;
+				background-position: center;
+				z-index: 1;
+				top: 0.4%;
+			}
+
+			#team1-bg, #team1-logo {
+				left: 16.6%;
+			}
+			#team2-bg, #team2-logo {
+				right: 16.5%;
+			}
+
 		</style>
 	</head>
 	<body>
@@ -100,13 +127,16 @@
 		<div id="matchType">Match Type</div>
 		<div class="teamName" id="team1">Team 1</div>
 		<div class="teamName" id="team2">Team 2</div>
-		<div id="bestOf">Best Of</div>
-
-		<div id="team1Points">
+		<!-- <div id="bestOf">Best Of</div> -->
+		<!-- <div id="team1Points">
 		</div>
-
 		<div id="team2Points">
-		</div>
+		</div> -->
+		<div class="team-bg" id="team1-bg"></div>
+		<div class="team-bg" id="team2-bg"></div>
+
+		<div class="team-logo" id="team1-logo"></div>
+		<div class="team-logo" id="team2-logo"></div>
 
 		<script>
 			// We get the replicants we want to listen to
@@ -122,8 +152,8 @@
 			const matchType = nodecg.Replicant('matchType');
 			const bestOf = nodecg.Replicant('bestOf');
 
-			const team1Points = nodecg.Replicant('team1Points');
-			const team2Points = nodecg.Replicant('team2Points');
+			// const team1Points = nodecg.Replicant('team1Points');
+			// const team2Points = nodecg.Replicant('team2Points');
 
 			// This here is a listener that will update the text in the div when the value of the replicant changes
 			team1.on('change', (newValue, oldValue) => {
@@ -148,12 +178,24 @@
 				return circles;
 			}
 
-			team1Points.on('change', (newValue, oldValue) => {
-				document.getElementById('team1Points').innerHTML = generateCircles(newValue);
+			const teamLogo1 = nodecg.Replicant('teamLogo1');
+			const teamLogo2 = nodecg.Replicant('teamLogo2');
+
+			teamLogo1.on('change', (newValue, oldValue) => {
+				const logoPath = `team-logos/${newValue}`;
+				document.getElementById('team1-logo').style.backgroundImage = `url(${logoPath})`;
 			});
-			team2Points.on('change', (newValue, oldValue) => {
-				document.getElementById('team2Points').innerHTML = generateCircles(newValue);
+			teamLogo2.on('change', (newValue, oldValue) => {
+				const logoPath = `team-logos/${newValue}`;
+				document.getElementById('team2-logo').style.backgroundImage = `url(${logoPath})`;
 			});
+
+			// team1Points.on('change', (newValue, oldValue) => {
+			// 	document.getElementById('team1Points').innerHTML = generateCircles(newValue);
+			// });
+			// team2Points.on('change', (newValue, oldValue) => {
+			// 	document.getElementById('team2Points').innerHTML = generateCircles(newValue);
+			// });
 
 		</script>
 	</body>
